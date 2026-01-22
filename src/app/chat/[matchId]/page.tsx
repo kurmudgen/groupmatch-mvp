@@ -51,7 +51,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     const fetchChatData = async () => {
-      if (!userData?.groupId || !matchId) {
+      if (!userData?.groupId || !matchId || !db) {
         setLoadingChat(false);
         return;
       }
@@ -100,6 +100,7 @@ export default function ChatPage() {
   }, [userData, matchId, router]);
 
   const fetchMessages = async () => {
+    if (!db) return;
     const messagesQuery = query(
       collection(db, "matches", matchId, "messages"),
       orderBy("createdAt", "asc")
@@ -127,7 +128,7 @@ export default function ChatPage() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !userData?.groupId || sending) return;
+    if (!newMessage.trim() || !userData?.groupId || sending || !db) return;
 
     setSending(true);
 

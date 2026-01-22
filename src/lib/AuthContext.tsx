@@ -34,6 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const fetchUserData = async (uid: string) => {
+    if (!db) return;
     const userDoc = await getDoc(doc(db, "users", uid));
     if (userDoc.exists()) {
       setUserData(userDoc.data() as UserData);
@@ -49,6 +50,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       if (user) {
@@ -63,8 +69,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signUp = async (email: string, password: string) => {
+    if (!auth || !db) throw new Error("Firebase not initialized");
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    // Create user document in Firestore
     await setDoc(doc(db, "users", userCredential.user.uid), {
       email: email,
       groupId: null,
@@ -72,10 +78,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
+    if (!auth) throw new Error("Firebase not initialized");
     await signInWithEmailAndPassword(auth, email, password);
   };
 
   const signOut = async () => {
+    if (!auth) throw new Error("Firebase not initialized");
     await firebaseSignOut(auth);
     setUserData(null);
   };

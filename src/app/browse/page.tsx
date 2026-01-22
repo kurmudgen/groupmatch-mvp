@@ -38,7 +38,7 @@ export default function BrowsePage() {
 
   useEffect(() => {
     const fetchGroups = async () => {
-      if (!userData?.groupId) {
+      if (!userData?.groupId || !db) {
         setLoadingGroups(false);
         return;
       }
@@ -87,7 +87,7 @@ export default function BrowsePage() {
   }, [userData]);
 
   const checkForMatch = async (likedGroupId: string) => {
-    if (!userData?.groupId) return false;
+    if (!userData?.groupId || !db) return false;
 
     // Check if the other group has already liked us
     const matchQuery = query(
@@ -101,7 +101,7 @@ export default function BrowsePage() {
   };
 
   const createMatch = async (otherGroupId: string) => {
-    if (!userData?.groupId) return;
+    if (!userData?.groupId || !db) return;
 
     await addDoc(collection(db, "matches"), {
       groupIds: [userData.groupId, otherGroupId],
@@ -110,7 +110,7 @@ export default function BrowsePage() {
   };
 
   const handleLike = async () => {
-    if (!userData?.groupId || currentIndex >= groups.length) return;
+    if (!userData?.groupId || currentIndex >= groups.length || !db) return;
 
     const likedGroup = groups[currentIndex];
 

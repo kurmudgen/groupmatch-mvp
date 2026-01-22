@@ -46,7 +46,7 @@ export default function MatchesPage() {
 
   useEffect(() => {
     const fetchMatches = async () => {
-      if (!userData?.groupId) {
+      if (!userData?.groupId || !db) {
         setLoadingMatches(false);
         return;
       }

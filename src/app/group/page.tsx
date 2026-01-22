@@ -36,7 +36,7 @@ export default function GroupPage() {
 
   useEffect(() => {
     const fetchGroup = async () => {
-      if (userData?.groupId) {
+      if (userData?.groupId && db) {
         const groupDoc = await getDoc(doc(db, "groups", userData.groupId));
         if (groupDoc.exists()) {
           setGroup(groupDoc.data() as Group);
@@ -48,7 +48,7 @@ export default function GroupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || !db) return;
 
     setError("");
     setSubmitting(true);
